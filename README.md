@@ -1,4 +1,4 @@
-# Hello Human :vulcan_salute: :man_technologist:
+#Sou João Gabriel, um apaixonado por tecnologia e desenvolvimento de software. 🚀
 
 ![visitors](https://visitor-badge.laobi.icu/badge?page_id=joaogabriel15.joaogabriel15)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
