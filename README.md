@@ -94,18 +94,6 @@ Conheça outros trabalhos no meu [portfólio profissional](https://pacheco.dev.b
 
 ---
 
-## Estatísticas
-
-<div align="center">
-
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=joaogabriel15&show_icons=true&hide_border=true&locale=pt-br&theme=transparent" alt="Estatísticas do GitHub de João Gabriel" />
-
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=joaogabriel15&layout=compact&hide_border=true&locale=pt-br&theme=transparent&hide=c%2B%2B,matlab,assembly" alt="Linguagens mais utilizadas por João Gabriel" />
-
-</div>
-
----
-
 ## Contato
 
 Estou aberto a conversar sobre desenvolvimento de software, novos produtos e projetos interessantes.
