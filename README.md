@@ -1,16 +1,16 @@
-<div align="center">
+<a href="https://pacheco.dev.br/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/header-light.svg">
+    <img alt="João Gabriel Pacheco — Desenvolvedor sênior Full Stack. Código que resolve, do banco ao browser." src="assets/header-dark.svg" width="100%">
+  </picture>
+</a>
 
-# João Gabriel Pacheco
-
-### Desenvolvedor de Software Sênior · Full Stack
-
-Transformo problemas complexos em soluções web e mobile eficientes, escaláveis e fáceis de usar.
-
-[![Portfólio](https://img.shields.io/badge/Portfólio-pacheco.dev.br-2563EB?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pacheco.dev.br)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-João_Gabriel_Pacheco-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/pacheco-dev-br/)
-[![E-mail](https://img.shields.io/badge/E--mail-Contato-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:pacheco.code@gmail.com)
-
-</div>
+<p align="center">
+  <a href="https://pacheco.dev.br/">Portfólio</a> &nbsp; · &nbsp;
+  <a href="https://www.linkedin.com/in/pacheco-dev-br/">LinkedIn</a> &nbsp; · &nbsp;
+  <a href="mailto:pacheco.code@gmail.com">E-mail</a>
+</p>
 
 ---
 
