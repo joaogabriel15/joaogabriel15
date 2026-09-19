@@ -14,16 +14,6 @@ Atuo em todo o ciclo de desenvolvimento, do banco de dados à interface, constru
 
 Tenho experiência em projetos de e-commerce, sistemas empresariais, plataformas de autoatendimento, integrações com CRMs e ERPs, soluções logísticas e aplicações com inteligência artificial.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-light.svg">
-    <img alt="Animação das contribuições de João Gabriel no GitHub" src="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-dark.svg">
-  </picture>
-</p>
-
-<p align="center"><sub>As contribuições viram uma animação que se atualiza automaticamente todos os dias.</sub></p>
-
 - Desenvolvimento de aplicações web e mobile
 - Construção e integração de APIs REST e GraphQL
 - Microsserviços, mensageria e processamento assíncrono
