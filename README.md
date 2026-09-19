@@ -1,18 +1,10 @@
-<a href="https://pacheco.dev.br/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="assets/header-light.svg">
-    <img alt="João Gabriel Pacheco — Desenvolvedor sênior Full Stack. Código que resolve, do banco ao browser." src="assets/header-dark.svg" width="100%">
-  </picture>
-</a>
+# João Gabriel Pacheco
 
-<p align="center">
-  <a href="https://pacheco.dev.br/">Portfólio</a> &nbsp; · &nbsp;
-  <a href="https://www.linkedin.com/in/pacheco-dev-br/">LinkedIn</a> &nbsp; · &nbsp;
-  <a href="mailto:pacheco.code@gmail.com">E-mail</a>
-</p>
+> Desenvolvedor de software sênior · Full Stack
 
----
+Código que resolve, do banco ao browser.
+
+[Portfólio](https://pacheco.dev.br/) · [LinkedIn](https://www.linkedin.com/in/pacheco-dev-br/) · [E-mail](mailto:pacheco.code@gmail.com)
 
 ## Sobre mim
 
@@ -21,6 +13,16 @@ Sou desenvolvedor de software sênior com mais de **8 anos de experiência** na 
 Atuo em todo o ciclo de desenvolvimento, do banco de dados à interface, construindo APIs, integrações, microsserviços, aplicações frontend e experiências mobile.
 
 Tenho experiência em projetos de e-commerce, sistemas empresariais, plataformas de autoatendimento, integrações com CRMs e ERPs, soluções logísticas e aplicações com inteligência artificial.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-light.svg">
+    <img alt="Animação das contribuições de João Gabriel no GitHub" src="https://raw.githubusercontent.com/joaogabriel15/joaogabriel15/output/github-snake-dark.svg">
+  </picture>
+</p>
+
+<p align="center"><sub>As contribuições viram uma animação que se atualiza automaticamente todos os dias.</sub></p>
 
 - Desenvolvimento de aplicações web e mobile
 - Construção e integração de APIs REST e GraphQL
