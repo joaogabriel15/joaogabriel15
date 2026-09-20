@@ -1,52 +1,82 @@
-"""Render the full portfolio hero painting as animated ASCII for GitHub.
+"""Convert the supplied Starry Night image with Chafa, then animate the ASCII.
 
-Usage: python build_ascii_gif.py /path/to/portfolio
-Requires Pillow. The source image and fonts belong to pacheco.dev.br.
+Requires Chafa and Pillow. Run from anywhere:
+    python tools/build_ascii_gif.py [path/to/chafa]
 """
 from pathlib import Path
-from math import cos, sin, pi
+from math import sin, pi
+import glob
+import re
+import shutil
+import subprocess
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-SITE = Path(sys.argv[1])
-DEST = Path(__file__).resolve().parents[1] / "assets" / "noite-estrelada-ascii.gif"
-SOURCE = SITE / "public/assets/hero-dark-1280.webp"
-W, H = 960, 600
-COLS, ROWS = 120, 50
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "assets/noite-estrelada-base.jpg"
+DEST = ROOT / "assets/noite-estrelada-chafa.gif"
+COLS, ROWS = 100, 52
 CW, CH = 8, 12
-RAMP = "  .,:-~=+*#%@"
 BG = (15, 28, 61)
-GOLD = (242, 201, 76)
-MONO = ImageFont.truetype(str(SITE / "public/fonts/jetbrains-mono.woff2"), 12)
 
-source = Image.open(SOURCE).convert("RGB")
+chafa = sys.argv[1] if len(sys.argv) > 1 else shutil.which("chafa")
+if not chafa:
+    found = glob.glob(str(Path.home() / "AppData/Local/Microsoft/WinGet/Packages/hpjansson.Chafa_*/**/Chafa.exe"), recursive=True)
+    chafa = found[0] if found else None
+if not chafa:
+    raise SystemExit("Chafa não encontrado: instale hpjansson.Chafa ou passe o executável como argumento")
+
+command = [chafa, "-f", "symbols", "-c", "full", "--symbols", "ascii",
+           "--relative", "off", "--dither", "none", "--color-space", "din99d",
+           "--stretch", "-s", f"{COLS}x{ROWS}", str(SOURCE)]
+result = subprocess.run(command, capture_output=True, check=True)
+raw = result.stdout.decode("utf-8", errors="replace")
+
+# Chafa emits truecolor ANSI for the ASCII glyph and its cell background.
+# Keep both colors while discarding terminal controls.
+tokens = re.split(r"(\x1b\[[0-9;?]*[A-Za-z])", raw)
+cells = [[]]
+color = (215, 225, 245)
+background = BG
+for token in tokens:
+    if token.startswith("\x1b["):
+        if token.endswith("m"):
+            values = token[2:-1].split(";")
+            for index in range(len(values) - 4):
+                if values[index:index + 2] == ["38", "2"]:
+                    color = tuple(map(int, values[index + 2:index + 5]))
+                if values[index:index + 2] == ["48", "2"]:
+                    background = tuple(map(int, values[index + 2:index + 5]))
+        continue
+    for char in token:
+        if char == "\n":
+            cells.append([])
+        elif char != "\r":
+            cells[-1].append((char, color, background))
+cells = [row[:COLS] for row in cells if row]
+if len(cells) != ROWS or any(len(row) != COLS for row in cells):
+    raise SystemExit(f"Grade Chafa inesperada: {len(cells)} linhas, comprimentos {[len(r) for r in cells[:4]]}")
+
+font_path = "C:/Windows/Fonts/CascadiaMono.ttf" if Path("C:/Windows/Fonts/CascadiaMono.ttf").exists() else "DejaVuSansMono.ttf"
+font = ImageFont.truetype(font_path, 12)
+source = Image.open(SOURCE).convert("RGB").resize((COLS, ROWS), Image.Resampling.LANCZOS)
 frames = []
 for frame in range(20):
-    canvas = Image.new("RGB", (W, H), BG)
+    canvas = Image.new("RGB", (COLS * CW, ROWS * CH), BG)
     draw = ImageDraw.Draw(canvas)
-    # Convert the entire painting to glyphs. The sampled position flows gently
-    # along the brushstrokes, while small gold glyphs orbit the painted swirl.
-    pixels = source.resize((COLS + 4, ROWS + 2), Image.Resampling.LANCZOS)
-    for row in range(ROWS):
-        for col in range(COLS):
-            dx = int(round(1.5 * sin(frame * 2 * pi / 20 + row * .14 + col * .055)))
-            color = pixels.getpixel((min(COLS + 3, max(0, col + 2 + dx)), row + 1))
-            brightness = .2126 * color[0] + .7152 * color[1] + .0722 * color[2]
-            index = min(len(RAMP) - 1, int(brightness / 240 * len(RAMP)))
-            char = RAMP[index]
+    for row, line in enumerate(cells):
+        for col, (char, base, cell_bg) in enumerate(line):
+            draw.rectangle((col * CW, row * CH, (col + 1) * CW, (row + 1) * CH), fill=cell_bg)
+            red, green, blue = source.getpixel((col, row))
+            light = .2126 * red + .7152 * green + .0722 * blue
+            # A slow luminous sweep crosses only light brushstrokes and stars.
+            wave = sin(col * .14 - row * .07 - frame * 2 * pi / 20)
+            glow = max(0.0, (wave - .7) / .3) * max(0.0, (light - 95) / 160)
+            color = tuple(min(255, round(base[i] * (1 - glow) + (255, 226, 156)[i] * glow)) for i in range(3))
             if char != " ":
-                draw.text((col * CW, row * CH - 5), char, font=MONO,
-                          fill=tuple(min(255, int(c * 1.3)) for c in color))
-    for particle in range(18):
-        phase = particle * 2 * pi / 18 + frame * 2 * pi / 20
-        radius = 38 + particle * 4.7
-        x = int(480 + radius * cos(phase))
-        y = int(200 + radius * .55 * sin(phase))
-        draw.text((x, y), "+" if particle % 3 else "*", font=MONO,
-                  fill=GOLD if particle % 2 else (200, 214, 243))
+                draw.text((col * CW, row * CH - 3), char, font=font, fill=color)
     frames.append(canvas.quantize(colors=128, method=Image.Quantize.MEDIANCUT))
 
-DEST.parent.mkdir(exist_ok=True)
-frames[0].save(DEST, save_all=True, append_images=frames[1:], duration=135,
+frames[0].save(DEST, save_all=True, append_images=frames[1:], duration=110,
                loop=0, disposal=2, optimize=True)
-print(f"{DEST}: {len(frames)} frames; {DEST.stat().st_size} bytes")
+print(f"{DEST}: {len(frames)} quadros, {DEST.stat().st_size} bytes")
