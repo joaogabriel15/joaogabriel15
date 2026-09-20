@@ -6,7 +6,7 @@ Código que resolve, do banco ao browser.
 
 [Portfólio](https://pacheco.dev.br/) · [LinkedIn](https://www.linkedin.com/in/pacheco-dev-br/) · [E-mail](mailto:pacheco.code@gmail.com)
 
-![Terminal ASCII animado: uma noite estrelada é renderizada em código](./assets/ascii-anim.svg?v=3)
+![Quadro ASCII animado de João Gabriel Pacheco inspirado na noite estrelada do portfólio](./assets/ascii-pacheco.gif)
 
 ## Sobre mim
 
