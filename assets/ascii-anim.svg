@@ -8,7 +8,6 @@
     @keyframes flip { 0% { opacity: 1 } 16.6% { opacity: 1 } 16.7% { opacity: 0 } 100% { opacity: 0 } }
     .cursor { animation: blink 1s steps(1, end) infinite; }
     @keyframes blink { 0%, 50% { opacity: 1 } 50.01%, 100% { opacity: 0 } }
-    @media (prefers-reduced-motion: reduce) { .frame, .cursor { animation: none; } .f6 { opacity: 1; } }
   </style>
   <rect x=".5" y=".5" width="819" height="389" rx="12" fill="#0f1c3d" stroke="#2b3b63"/>
   <circle cx="25" cy="25" r="6" fill="#ff5f56"/><circle cx="46" cy="25" r="6" fill="#ffbd2e"/><circle cx="67" cy="25" r="6" fill="#27c93f"/>
