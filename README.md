@@ -6,7 +6,7 @@ Código que resolve, do banco ao browser.
 
 [Portfólio](https://pacheco.dev.br/) · [LinkedIn](https://www.linkedin.com/in/pacheco-dev-br/) · [E-mail](mailto:pacheco.code@gmail.com)
 
-![Imagem da noite estrelada do portfólio recriada em caracteres ASCII e animada](./assets/ascii-pacheco.gif)
+![A pintura completa da noite estrelada do portfólio recriada e animada em caracteres ASCII](./assets/noite-estrelada-ascii.gif)
 
 ## Sobre mim
 
