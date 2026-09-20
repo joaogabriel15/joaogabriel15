@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="390" viewBox="0 0 820 390" role="img" aria-label="Terminal ASCII animado renderizando uma noite estrelada">
+  <style>
+    .term { font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; font-size: 15px; }
+    .prompt { fill: #f2c94c; } .text { fill: #dce6ff; } .muted { fill: #7d90ba; } .sky { fill: #8fa7dc; } .gold { fill: #f2c94c; } .ok { fill: #8bd5a4; }
+    .frame { opacity: 0; animation: flip 4.8s steps(1, end) infinite; }
+    .f1 { animation-delay: 0s; } .f2 { animation-delay: .8s; } .f3 { animation-delay: 1.6s; }
+    .f4 { animation-delay: 2.4s; } .f5 { animation-delay: 3.2s; } .f6 { animation-delay: 4s; }
+    @keyframes flip { 0% { opacity: 1 } 16.6% { opacity: 1 } 16.7% { opacity: 0 } 100% { opacity: 0 } }
+    .cursor { animation: blink 1s steps(1, end) infinite; }
+    @keyframes blink { 0%, 50% { opacity: 1 } 50.01%, 100% { opacity: 0 } }
+    @media (prefers-reduced-motion: reduce) { .frame, .cursor { animation: none; } .f6 { opacity: 1; } }
+  </style>
+  <rect x=".5" y=".5" width="819" height="389" rx="12" fill="#0f1c3d" stroke="#2b3b63"/>
+  <circle cx="25" cy="25" r="6" fill="#ff5f56"/><circle cx="46" cy="25" r="6" fill="#ffbd2e"/><circle cx="67" cy="25" r="6" fill="#27c93f"/>
+  <text class="term muted" x="405" y="30" text-anchor="middle" xml:space="preserve">pacheco@github — live canvas</text>
+  <line x1="1" y1="46" x2="819" y2="46" stroke="#2b3b63"/>
+  <g class="term">
+    <text x="24" y="77" xml:space="preserve"><tspan class="prompt">pacheco@github</tspan><tspan class="muted">:</tspan><tspan class="text">~$ ./render --scene=starry-night</tspan></text>
+    <rect class="cursor" x="423" y="63" width="9" height="16" fill="#dce6ff"/>
+    <g class="frame f1">
+      <text class="muted" x="24" y="109" xml:space="preserve">[&gt;                         ]   0%  loading palette...</text>
+      <text class="muted" x="24" y="141" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="169" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="197" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="225" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="253" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="281" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                                       </text>
+    </g>
+    <g class="frame f2">
+      <text class="sky" x="24" y="109" xml:space="preserve">[=====&gt;                    ]  20%  drawing sky...</text>
+      <text class="sky" x="24" y="141" xml:space="preserve">                 .                 *             .</text>
+      <text class="sky" x="24" y="169" xml:space="preserve">        *                 .                   .</text>
+      <text class="muted" x="24" y="197" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="225" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="253" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="281" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                                       </text>
+    </g>
+    <g class="frame f3">
+      <text class="sky" x="24" y="109" xml:space="preserve">[==========&gt;               ]  40%  placing stars...</text>
+      <text class="gold" x="24" y="141" xml:space="preserve">                 .                 *             .</text>
+      <text class="sky" x="24" y="169" xml:space="preserve">        *                 .                   .</text>
+      <text class="gold" x="24" y="197" xml:space="preserve">                             .     *      .</text>
+      <text class="muted" x="24" y="225" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="253" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="281" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                                       </text>
+    </g>
+    <g class="frame f4">
+      <text class="sky" x="24" y="109" xml:space="preserve">[===============&gt;          ]  60%  shaping horizon...</text>
+      <text class="gold" x="24" y="141" xml:space="preserve">                 .                 *             .</text>
+      <text class="sky" x="24" y="169" xml:space="preserve">        *                 .                   .</text>
+      <text class="gold" x="24" y="197" xml:space="preserve">                             .     *      .</text>
+      <text class="sky" x="24" y="225" xml:space="preserve">            /\                         /\</text>
+      <text class="sky" x="24" y="253" xml:space="preserve">       /\  /  \     /\        /\     /  \   /\</text>
+      <text class="muted" x="24" y="281" xml:space="preserve">                                       </text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                                       </text>
+    </g>
+    <g class="frame f5">
+      <text class="sky" x="24" y="109" xml:space="preserve">[====================&gt;     ]  80%  painting details...</text>
+      <text class="gold" x="24" y="141" xml:space="preserve">                 .                 *             .</text>
+      <text class="sky" x="24" y="169" xml:space="preserve">        *                 .                   .</text>
+      <text class="gold" x="24" y="197" xml:space="preserve">                             .     *      .</text>
+      <text class="sky" x="24" y="225" xml:space="preserve">            /\                         /\</text>
+      <text class="sky" x="24" y="253" xml:space="preserve">       /\  /  \     /\        /\     /  \   /\</text>
+      <text class="text" x="24" y="281" xml:space="preserve">      /  \/____\___/  \______/  \___/____\/  \</text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</text>
+    </g>
+    <g class="frame f6">
+      <text class="ok" x="24" y="109" xml:space="preserve">[==========================] 100%  scene ready</text>
+      <text class="gold" x="24" y="141" xml:space="preserve">                 .                 *             .</text>
+      <text class="sky" x="24" y="169" xml:space="preserve">        *                 .                   .</text>
+      <text class="gold" x="24" y="197" xml:space="preserve">                             .     *      .</text>
+      <text class="sky" x="24" y="225" xml:space="preserve">            /\                         /\</text>
+      <text class="sky" x="24" y="253" xml:space="preserve">       /\  /  \     /\        /\     /  \   /\</text>
+      <text class="text" x="24" y="281" xml:space="preserve">      /  \/____\___/  \______/  \___/____\/  \</text>
+      <text class="muted" x="24" y="309" xml:space="preserve">                  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</text>
+      <text class="prompt" x="24" y="351" xml:space="preserve">pacheco@github</text><text class="muted" x="162" y="351" xml:space="preserve">:~$</text>
+      <rect class="cursor" x="193" y="337" width="9" height="16" fill="#dce6ff"/>
+    </g>
+  </g>
+</svg>
