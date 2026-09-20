@@ -1,12 +1,6 @@
 # João Gabriel Pacheco
 
-> Desenvolvedor de software sênior · Full Stack
-
-Código que resolve, do banco ao browser.
-
-[Portfólio](https://pacheco.dev.br/) · [LinkedIn](https://www.linkedin.com/in/pacheco-dev-br/) · [E-mail](mailto:pacheco.code@gmail.com)
-
-![A imagem da noite estrelada enviada por João, convertida em ASCII colorido e animada](./assets/noite-estrelada-chafa.gif)
+![A noite estrelada enviada por João, convertida em ASCII colorido e animada](./assets/noite-estrelada-refinada.gif)
 
 ## Sobre mim
 
