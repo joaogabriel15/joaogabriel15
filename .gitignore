@@ -1,0 +1,6 @@
+# Modelo de recorte de fundo usado por tools/gen_card.py (4,7 MB, baixado à parte)
+u2netp.onnx
+*.onnx
+
+# Foto de origem do retrato; só o SVG gerado vai para o repositório
+joao.png
