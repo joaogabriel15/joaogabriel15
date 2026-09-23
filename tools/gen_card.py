@@ -133,7 +133,7 @@ NB = "\u00a0"
 def retrato(foto, colunas, zoom, foco, foco_y, fundo):
     """Retrato em ASCII colorido: caractere pelo brilho, cor pelo matiz do pixel.
 
-    Em 96 colunas o traço fino da fonte cobre pouca área, então o texto vai
+    Em 120 colunas o traço fino da fonte cobre pouca área, então o texto vai
     em negrito e a cor fica clara; o brilho vai só para a escolha do caractere.
 
     O fundo é escurecido por uma máscara elíptica centrada no foco (sem
@@ -145,7 +145,7 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
     w, h = im.size
     cw = PW / colunas
     fs = cw / 0.6
-    lh = cw * 2
+    lh = cw * 1.7  # linhas mais baixas que a fonte pede: boca e olhos ganham resolução
     linhas = int(PH / lh)
     lado = min(w, h) / zoom
     alt = lado * (linhas * lh) / PW
@@ -153,10 +153,10 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
     x0 = max(0, min(w - lado, cx - lado / 2))
     y0 = max(0, min(h - alt, cy - alt / 2))
     im = im.crop((int(x0), int(y0), int(x0 + lado), int(y0 + alt)))
-    # as pinceladas viram ruído em 96 colunas: borra antes, realça contorno depois
-    im = im.filter(ImageFilter.GaussianBlur(lado / colunas * 0.6))
+    # as pinceladas viram ruído na resolução do retrato: borra antes, realça contorno depois
+    im = im.filter(ImageFilter.GaussianBlur(lado / colunas))
     im = im.resize((colunas, linhas), Image.BOX)
-    im = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=140, threshold=0))
+    im = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=100, threshold=0))
     px = im.load()
 
     # brilho mascarado de cada célula
@@ -192,7 +192,7 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
             ch = " " if v < 0.06 else RAMPA_R[min(len(RAMPA_R) - 1, int(v * len(RAMPA_R)))]
             hh, ss, _ = colorsys.rgb_to_hsv(red / 255, g / 255, b / 255)
             cor = colorsys.hsv_to_rgb(hh, min(1.0, ss * 1.15), min(1.0, (0.6 + 0.45 * v) * (0.5 + 0.5 * m)))
-            cor = "#%02x%02x%02x" % tuple(int(x * 255) // 16 * 16 + 8 for x in cor)
+            cor = "#%02x%02x%02x" % tuple(int(x * 255) // 24 * 24 + 12 for x in cor)
             if ch == " ":
                 cor = cor_atual  # espaço não tem cor: não quebra o trecho
             if cor != cor_atual and atual:
@@ -288,7 +288,7 @@ def projetos(y):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--foto", help="imagem de origem do retrato")
-    ap.add_argument("--colunas", type=int, default=96, help="resolução do retrato")
+    ap.add_argument("--colunas", type=int, default=120, help="resolução do retrato")
     ap.add_argument("--zoom", type=float, default=1.65, help="aproximação do recorte")
     ap.add_argument("--foco", type=float, default=0.46, help="centro x do recorte (0 a 1)")
     ap.add_argument("--foco-y", type=float, default=0.38, help="centro y do recorte (0 a 1)")
