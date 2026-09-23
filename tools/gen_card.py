@@ -125,17 +125,22 @@ def monograma():
 
 
 # -------------------------------------------------------------- retrato ASCII
-RAMPA_R = " .,:;i1tfLCG08@"
+# sem "-" e "=": em fileira, viram listras horizontais no fundo
+RAMPA_R = " .:;+*#%@"
 NB = "\u00a0"
 
 
 def retrato(foto, colunas, zoom, foco, foco_y, fundo):
-    """Retrato em ASCII colorido: caractere pelo brilho, cor pelo pixel.
+    """Retrato em ASCII colorido: caractere pelo brilho, cor pelo matiz do pixel.
+
+    Em 96 colunas o traço fino da fonte cobre pouca área, então o texto vai
+    em negrito e a cor fica clara; o brilho vai só para a escolha do caractere.
 
     O fundo é escurecido por uma máscara elíptica centrada no foco (sem
     modelo de recorte); `fundo` é o brilho que sobra fora dela.
     """
-    from PIL import Image, ImageFilter, ImageOps
+    from PIL import Image, ImageFilter
+    import colorsys
     im = Image.open(foto).convert("RGB")
     w, h = im.size
     cw = PW / colunas
@@ -143,29 +148,51 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
     lh = cw * 2
     linhas = int(PH / lh)
     lado = min(w, h) / zoom
+    alt = lado * (linhas * lh) / PW
     cx, cy = foco * w, foco_y * h
     x0 = max(0, min(w - lado, cx - lado / 2))
-    y0 = max(0, min(h - lado * (linhas * lh) / PW, cy - lado / 2))
-    alt = lado * (linhas * lh) / PW
+    y0 = max(0, min(h - alt, cy - alt / 2))
     im = im.crop((int(x0), int(y0), int(x0 + lado), int(y0 + alt)))
-    im = ImageOps.autocontrast(im, cutoff=1)
-    im = im.filter(ImageFilter.SMOOTH).resize((colunas, linhas), Image.LANCZOS)
+    # as pinceladas viram ruído em 96 colunas: borra antes, realça contorno depois
+    im = im.filter(ImageFilter.GaussianBlur(lado / colunas * 0.6))
+    im = im.resize((colunas, linhas), Image.BOX)
+    im = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=140, threshold=0))
     px = im.load()
+
+    # brilho mascarado de cada célula
+    cel = []
+    for r in range(linhas):
+        for c in range(colunas):
+            red, g, b = px[c, r]
+            dx = (c / colunas - (cx - x0) / lado) / 0.40
+            dy = (r / linhas - (cy - y0) / alt) / 0.58
+            m = max(fundo, min(1.0, 1.3 - (dx * dx + dy * dy)))
+            lum = (0.299 * red + 0.587 * g + 0.114 * b) / 255
+            cel.append((red, g, b, m, lum * m))
+    # equaliza o brilho: a pele deixa de saturar no fim da rampa
+    ordem = sorted(v[4] for v in cel)
+    n = len(ordem)
+
+    def rank(v):
+        lo, hi = 0, n
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if ordem[mid] < v:
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo / n
+
     out = ['<g class="foto">']
     for r in range(linhas):
         runs, atual, cor_atual = [], [], None
         for c in range(colunas):
-            red, g, b = px[c, r]
-            # máscara: elipse em torno do rosto, com o foco no centro
-            dx = (c / colunas - (cx - x0) / lado) / 0.42
-            dy = (r / linhas - (cy - y0) / alt) / 0.62
-            m = max(fundo, min(1.0, 1.25 - (dx * dx + dy * dy)))
-            lum = (0.299 * red + 0.587 * g + 0.114 * b) / 255 * m
-            ch = RAMPA_R[min(len(RAMPA_R) - 1, int(lum ** 0.75 * len(RAMPA_R)))]
-            # cor do pixel levada a brilho alto: o caractere já codifica a luz
-            topo = max(red, g, b, 1)
-            k = (120 + 125 * m) / topo
-            cor = "#%02x%02x%02x" % tuple(min(255, int(v * k)) // 20 * 20 + 10 for v in (red, g, b))
+            red, g, b, m, lm = cel[r * colunas + c]
+            v = 0.5 * rank(lm) + 0.5 * lm      # meio equalizado, meio linear
+            ch = " " if v < 0.06 else RAMPA_R[min(len(RAMPA_R) - 1, int(v * len(RAMPA_R)))]
+            hh, ss, _ = colorsys.rgb_to_hsv(red / 255, g / 255, b / 255)
+            cor = colorsys.hsv_to_rgb(hh, min(1.0, ss * 1.15), min(1.0, (0.6 + 0.45 * v) * (0.5 + 0.5 * m)))
+            cor = "#%02x%02x%02x" % tuple(int(x * 255) // 16 * 16 + 8 for x in cor)
             if ch == " ":
                 cor = cor_atual  # espaço não tem cor: não quebra o trecho
             if cor != cor_atual and atual:
@@ -179,7 +206,7 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
                         for cor, t in runs)
         y = PY + (r + 1) * lh - lh * 0.2
         out.append(f'<text class="in" style="animation-delay:{0.3 + r * 0.02:.2f}s" '
-                   f'x="{PX}" y="{y:.1f}" font-size="{fs:.2f}" '
+                   f'x="{PX}" y="{y:.1f}" font-size="{fs:.2f}" font-weight="700" '
                    f'textLength="{n_chars * cw:.1f}" lengthAdjust="spacing">{spans}</text>')
     out.append("</g>")
     return "\n".join(out)
