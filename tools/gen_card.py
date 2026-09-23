@@ -130,7 +130,15 @@ RAMPA_R = " .:;+*#%@"
 NB = "\u00a0"
 
 
-def retrato(foto, colunas, zoom, foco, foco_y, fundo):
+PALETAS = {
+    # nome: (cor do escuro, cor do claro) para as paletas de duas cores
+    "duotone": ((0x2a, 0x6c, 0xd6), (0xff, 0xd2, 0x5a)),
+    "verde": ((0x1e, 0x7a, 0x3c), (0xc8, 0xff, 0x8a)),
+    "ambar": ((0x8a, 0x44, 0x0c), (0xff, 0xd8, 0x80)),
+}
+
+
+def retrato(foto, colunas, zoom, foco, foco_y, fundo, paleta="cor"):
     """Retrato em ASCII colorido: caractere pelo brilho, cor pelo matiz do pixel.
 
     Em 120 colunas o traço fino da fonte cobre pouca área, então o texto vai
@@ -190,8 +198,15 @@ def retrato(foto, colunas, zoom, foco, foco_y, fundo):
             red, g, b, m, lm = cel[r * colunas + c]
             v = 0.5 * rank(lm) + 0.5 * lm      # meio equalizado, meio linear
             ch = " " if v < 0.06 else RAMPA_R[min(len(RAMPA_R) - 1, int(v * len(RAMPA_R)))]
-            hh, ss, _ = colorsys.rgb_to_hsv(red / 255, g / 255, b / 255)
-            cor = colorsys.hsv_to_rgb(hh, min(1.0, ss * 1.15), min(1.0, (0.6 + 0.45 * v) * (0.5 + 0.5 * m)))
+            brilho = min(1.0, (0.6 + 0.45 * v) * (0.5 + 0.5 * m))
+            if paleta == "cor":
+                hh, ss, _ = colorsys.rgb_to_hsv(red / 255, g / 255, b / 255)
+                cor = colorsys.hsv_to_rgb(hh, min(1.0, ss * 1.15), brilho)
+            else:
+                escuro, claro = PALETAS[paleta]
+                t = min(1.0, v ** 0.7 * 1.15)
+                cor = tuple(min(1.0, (e + (c - e) * t) / 255 * (0.75 + 0.25 * m) * 1.15)
+                            for e, c in zip(escuro, claro))
             cor = "#%02x%02x%02x" % tuple(int(x * 255) // 24 * 24 + 12 for x in cor)
             if ch == " ":
                 cor = cor_atual  # espaço não tem cor: não quebra o trecho
@@ -293,11 +308,13 @@ def main():
     ap.add_argument("--foco", type=float, default=0.46, help="centro x do recorte (0 a 1)")
     ap.add_argument("--foco-y", type=float, default=0.38, help="centro y do recorte (0 a 1)")
     ap.add_argument("--fundo", type=float, default=0.3, help="brilho que sobra no fundo")
+    ap.add_argument("--paleta", default="cor", choices=["cor", *PALETAS],
+                    help="cor: cores da imagem; as outras pintam do escuro ao claro em duas cores")
     ap.add_argument("-o", "--saida", type=Path, default=ROOT / "assets/card.svg")
     a = ap.parse_args()
     SAIDA = a.saida
     if a.foto:
-        esquerda = [retrato(a.foto, a.colunas, a.zoom, a.foco, a.foco_y, a.fundo),
+        esquerda = [retrato(a.foto, a.colunas, a.zoom, a.foco, a.foco_y, a.fundo, a.paleta),
                     f'<rect class="scan" x="{PX}" y="{PY}" width="{PW}" height="3" '
                     f'fill="{COR["acento"]}" fill-opacity="0.18"/>']
     else:
