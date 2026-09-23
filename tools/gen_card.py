@@ -1,7 +1,9 @@
 """Gera assets/card.svg: card de perfil em ASCII animado para o README.
 
-Só biblioteca padrão. Uso:
-    python tools/gen_card.py [saida.svg]
+Uso:
+    python tools/gen_card.py --foto joao.png -o assets/card.svg
+Sem --foto, o painel esquerdo mostra o monograma sobre um campo ASCII
+(só biblioteca padrão). Com --foto, precisa de Pillow.
 
 Regras do SVG (o GitHub serve via <img> com CSP sandbox):
 - sem JavaScript; só CSS
@@ -14,10 +16,9 @@ Regras do SVG (o GitHub serve via <img> com CSP sandbox):
 from pathlib import Path
 from math import sin, cos, pi
 from xml.sax.saxutils import escape
-import sys
+import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
-SAIDA = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "assets/card.svg"
 
 PERFIL = {
     "nome": "João Gabriel Pacheco",
@@ -69,7 +70,7 @@ def txt(x, y, s, fs, cor, extra=""):
 
 # ---------------------------------------------------------------- campo ASCII
 FS_C, CW, LH = 10, 6.0, 12.0
-PX, PY, PW, PH = M, 120, 408, 300          # painel esquerdo
+PX, PY, PW, PH = M, 120, 408, 408          # painel esquerdo
 COLS, ROWS = int(PW / CW), int(PH / LH)    # 68 x 25
 RAMPA = " .:-=+*#%@"
 
@@ -123,6 +124,67 @@ def monograma():
     return "\n".join(out)
 
 
+# -------------------------------------------------------------- retrato ASCII
+RAMPA_R = " .,:;i1tfLCG08@"
+NB = "\u00a0"
+
+
+def retrato(foto, colunas, zoom, foco, foco_y, fundo):
+    """Retrato em ASCII colorido: caractere pelo brilho, cor pelo pixel.
+
+    O fundo é escurecido por uma máscara elíptica centrada no foco (sem
+    modelo de recorte); `fundo` é o brilho que sobra fora dela.
+    """
+    from PIL import Image, ImageFilter, ImageOps
+    im = Image.open(foto).convert("RGB")
+    w, h = im.size
+    cw = PW / colunas
+    fs = cw / 0.6
+    lh = cw * 2
+    linhas = int(PH / lh)
+    lado = min(w, h) / zoom
+    cx, cy = foco * w, foco_y * h
+    x0 = max(0, min(w - lado, cx - lado / 2))
+    y0 = max(0, min(h - lado * (linhas * lh) / PW, cy - lado / 2))
+    alt = lado * (linhas * lh) / PW
+    im = im.crop((int(x0), int(y0), int(x0 + lado), int(y0 + alt)))
+    im = ImageOps.autocontrast(im, cutoff=1)
+    im = im.filter(ImageFilter.SMOOTH).resize((colunas, linhas), Image.LANCZOS)
+    px = im.load()
+    out = ['<g class="foto">']
+    for r in range(linhas):
+        runs, atual, cor_atual = [], [], None
+        for c in range(colunas):
+            red, g, b = px[c, r]
+            # máscara: elipse em torno do rosto, com o foco no centro
+            dx = (c / colunas - (cx - x0) / lado) / 0.42
+            dy = (r / linhas - (cy - y0) / alt) / 0.62
+            m = max(fundo, min(1.0, 1.25 - (dx * dx + dy * dy)))
+            lum = (0.299 * red + 0.587 * g + 0.114 * b) / 255 * m
+            ch = RAMPA_R[min(len(RAMPA_R) - 1, int(lum ** 0.75 * len(RAMPA_R)))]
+            # cor do pixel levada a brilho alto: o caractere já codifica a luz
+            topo = max(red, g, b, 1)
+            k = (120 + 125 * m) / topo
+            cor = "#%02x%02x%02x" % tuple(min(255, int(v * k)) // 20 * 20 + 10 for v in (red, g, b))
+            if ch == " ":
+                cor = cor_atual  # espaço não tem cor: não quebra o trecho
+            if cor != cor_atual and atual:
+                runs.append((cor_atual, "".join(atual)))
+                atual = []
+            atual.append(ch)
+            cor_atual = cor
+        runs.append((cor_atual, "".join(atual)))
+        n_chars = sum(len(t) for _, t in runs)
+        spans = "".join(f'<tspan fill="{cor or COR["fundo"]}">{escape(t.replace(" ", NB))}</tspan>'
+                        for cor, t in runs)
+        y = PY + (r + 1) * lh - lh * 0.2
+        out.append(f'<text class="in" style="animation-delay:{0.3 + r * 0.02:.2f}s" '
+                   f'x="{PX}" y="{y:.1f}" font-size="{fs:.2f}" '
+                   f'textLength="{n_chars * cw:.1f}" lengthAdjust="spacing">{spans}</text>')
+    out.append("</g>")
+    return "\n".join(out)
+
+
 # ------------------------------------------------------------- painel direito
 def painel_info():
     fs, cw, lh = 13, 7.8, 19
@@ -168,15 +230,15 @@ def secao(y, titulo):
     return txt(M, y, f"[ {titulo} ]", 11, COR["fraco"], ' letter-spacing="0"')
 
 
-def chips(y):
-    out, x = [], M
+def chips(x, y):
+    out = []
     fs = 12
     for a in PERFIL["areas"]:
-        w = len(a) * 0.6 * fs + 24
+        w = len(a) * 0.6 * fs + 20
         out.append(f'<rect x="{x}" y="{y}" width="{w:.1f}" height="26" rx="4" '
                    f'fill="{COR["painel"]}" stroke="{COR["borda"]}"/>')
-        out.append(txt(x + 12, y + 17, a, fs, COR["texto"]))
-        x += w + 10
+        out.append(txt(x + 10, y + 17, a, fs, COR["texto"]))
+        x += w + 8
     return "\n".join(out)
 
 
@@ -197,12 +259,33 @@ def projetos(y):
 
 # --------------------------------------------------------------------- montar
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--foto", help="imagem de origem do retrato")
+    ap.add_argument("--colunas", type=int, default=96, help="resolução do retrato")
+    ap.add_argument("--zoom", type=float, default=1.65, help="aproximação do recorte")
+    ap.add_argument("--foco", type=float, default=0.46, help="centro x do recorte (0 a 1)")
+    ap.add_argument("--foco-y", type=float, default=0.38, help="centro y do recorte (0 a 1)")
+    ap.add_argument("--fundo", type=float, default=0.3, help="brilho que sobra no fundo")
+    ap.add_argument("-o", "--saida", type=Path, default=ROOT / "assets/card.svg")
+    a = ap.parse_args()
+    SAIDA = a.saida
+    if a.foto:
+        esquerda = [retrato(a.foto, a.colunas, a.zoom, a.foco, a.foco_y, a.fundo),
+                    f'<rect class="scan" x="{PX}" y="{PY}" width="{PW}" height="3" '
+                    f'fill="{COR["acento"]}" fill-opacity="0.18"/>']
+    else:
+        esquerda = [camada("l1", COR["campo"], 0.0, 1.6, 0.9),
+                    camada("l2", COR["campo2"], 1.7, 3.2, 0.55),
+                    f'<rect x="{PX + PW / 2 - 170}" y="{PY + PH / 2 - 92}" width="340" height="184" '
+                    f'rx="4" fill="{COR["painel"]}" fill-opacity="0.78"/>',
+                    monograma()]
     nome = PERFIL["nome"]
     fs_nome = 28
     larg_nome = len(nome) * 0.6 * fs_nome
     passos = len(nome)
-    y_areas = PY + PH + 40
-    y_proj = y_areas + 64
+    x_dir = PX + PW + 24
+    y_areas = PY + PH - 38
+    y_proj = PY + PH + 40
     H = y_proj + 70 + M
 
     css = f"""
@@ -219,6 +302,8 @@ text {{ font-family: {FONTE}; white-space: pre; }}
 .capa {{ opacity: 0; animation: digita 1.4s steps({passos}) .2s backwards, cobre 1.6s backwards; }}
 .cursor {{ animation: pisca 1s step-end infinite; }}
 .in {{ animation: entra .5s ease-out backwards; }}
+.scan {{ animation: varre 6s linear infinite; }}
+@keyframes varre {{ from {{ transform: translateY(0) }} to {{ transform: translateY({PH - 3}px) }} }}
 .mono {{ animation: pulsa 4s ease-in-out infinite; }}
 @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} }}
 """
@@ -237,18 +322,14 @@ text {{ font-family: {FONTE}; white-space: pre; }}
         txt(M, 86, PERFIL["subtitulo"], 13, COR["acento"]),
         txt(W - M - len(PERFIL["canto"]) * 0.6 * 11, 44, PERFIL["canto"], 11, COR["fraco"]),
         f'<line x1="{M}" y1="{PY - 18}" x2="{W - M}" y2="{PY - 18}" stroke="{COR["borda"]}"/>',
-        # painel esquerdo: campo em duas camadas + monograma
+        # painel esquerdo: retrato, ou campo em duas camadas + monograma
         f'<rect x="{PX - 1}" y="{PY - 1}" width="{PW + 2}" height="{PH + 2}" fill="{COR["painel"]}" stroke="{COR["borda"]}"/>',
         f'<g clip-path="url(#cp)">',
-        camada("l1", COR["campo"], 0.0, 1.6, 0.9),
-        camada("l2", COR["campo2"], 1.7, 3.2, 0.55),
-        f'<rect x="{PX + PW / 2 - 170}" y="{PY + PH / 2 - 92}" width="340" height="184" rx="4" '
-        f'fill="{COR["painel"]}" fill-opacity="0.78"/>',
-        monograma(),
+        *esquerda,
         "</g>",
         painel_info(),
-        secao(y_areas, "ÁREAS DE ATUAÇÃO"),
-        chips(y_areas + 12),
+        txt(x_dir, y_areas, "[ ÁREAS DE ATUAÇÃO ]", 11, COR["fraco"]),
+        chips(x_dir, y_areas + 12),
         secao(y_proj, "PROJETOS EM DESTAQUE"),
         projetos(y_proj + 12),
         "</svg>",

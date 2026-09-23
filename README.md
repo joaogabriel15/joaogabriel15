@@ -24,4 +24,4 @@ Outros trabalhos no meu [portfólio](https://pacheco.dev.br).
 
 [pacheco.dev.br](https://pacheco.dev.br) · [LinkedIn](https://www.linkedin.com/in/pacheco-dev-br/) · [pacheco.code@gmail.com](mailto:pacheco.code@gmail.com)
 
-<sub>O card é gerado por <a href="./tools/gen_card.py"><code>tools/gen_card.py</code></a>.</sub>
+<sub>O card é gerado por <a href="./tools/gen_card.py"><code>tools/gen_card.py</code></a> a partir de um retrato pintado no estilo de Van Gogh.</sub>
