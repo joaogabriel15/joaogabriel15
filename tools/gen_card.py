@@ -1,7 +1,8 @@
 """Gera assets/card.svg: card de perfil em ASCII animado para o README.
 
-Uso:
-    python tools/gen_card.py --foto joao.png -o assets/card.svg
+Uso (comando que gera o card atual):
+    python tools/gen_card.py --foto joao.png --zoom 1.25 --foco 0.47 \
+        --foco-y 0.42 --fundo 0.7
 Sem --foto, o painel esquerdo mostra o monograma sobre um campo ASCII
 (só biblioteca padrão). Com --foto, precisa de Pillow.
 
