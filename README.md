@@ -1,5 +1,5 @@
 <a href="https://pacheco.dev.br">
-  <img src="./assets/card.svg" alt="João Gabriel Pacheco, senior full-stack developer, 8+ years in web and mobile" width="100%">
+  <img src="./assets/card.svg" alt="João Gabriel Prestupa Pacheco, senior full-stack developer, 8+ years in web and mobile" width="100%">
 </a>
 
 <sub>**English** · [Português](./README.pt-BR.md)</sub>
