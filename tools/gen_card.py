@@ -22,7 +22,7 @@ import argparse
 ROOT = Path(__file__).resolve().parents[1]
 
 PERFIL = {
-    "nome": "João Gabriel Pacheco",
+    "nome": "João Gabriel Prestupa Pacheco",
     "subtitulo": "@joaogabriel15 · desenvolvedor sênior full stack",
     "canto": "[ pacheco.dev.br ]",
     "monograma": "JGP",
